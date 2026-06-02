@@ -426,7 +426,7 @@ st.markdown("""
 <div class="header-wrap">
   <div>
     <div class="header-sub">ACI Premio Plastics · QC Division</div>
-    <h1 class="header-title"> PolyColor </h1>
+    <h1 class="header-title"><span style="color:#e63946">P</span><span style="color:#f4a261">o</span><span style="color:#2a9d8f">l</span><span style="color:#0ea5e9">y</span><span style="color:#0f172a">C</span><span style="color:#9b5de5">o</span><span style="color:#f4a261">l</span><span style="color:#e63946">o</span><span style="color:#2a9d8f">r</span></h1>
   </div>
   <div class="header-sub">CIE L*a*b* · Independent Axis Evaluation</div>
 </div>
