@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ─── STYLING (LIGHT THEMING) ───────────────────────────────────────────────────
+# ─── STYLING (LIGHT THEMING & CUSTOM SKY BLUE ACCENTS) ─────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
@@ -228,27 +228,28 @@ div[data-testid="stSelectbox"] > div > div {
     color: var(--text) !important;
 }
 
-/* ── BUTTON STYLING (FIXES THE TEXT BACKGROUND PACK) ── */
+/* ── BUTTON OVERHAUL (FIXES VISIBILITY AND BACKGROUNDS) ── */
 div[data-testid="stButton"] > button {
     background: var(--accent) !important;
-    color: #ffffff !important;
     border: none !important;
     border-radius: 8px !important;
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 0.95rem !important;
-    letter-spacing: 0.04em !important;
     padding: 0.6rem 2rem !important;
     width: 100%;
     transition: background-color 0.15s ease;
 }
 div[data-testid="stButton"] > button:hover {
     background: var(--accent-hover) !important;
-    color: #ffffff !important;
 }
-div[data-testid="stButton"] > button p {
+/* Explicitly control the text nested inside the button paragraph wrapper */
+div[data-testid="stButton"] button p {
     background: transparent !important;
     color: #ffffff !important;
+    font-family: 'Syne', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: 0.04em !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 /* ── LOG TABLE ── */
@@ -312,7 +313,7 @@ SHEET_ID = "1u0d5uV9r7NE8JjYd-vcE0z8PRLnE3bjMf1eFVjcW-yg"
 TAB_COLORS   = "Color Visualization Index"
 TAB_QC       = "Color Tolerance Sheet"
 
-LOG_SECTION_START = 20  
+LOG_SECTION_START = 15  # Point to row 15 where the clean log framework begins
 
 
 @st.cache_resource(ttl=60)
@@ -350,7 +351,7 @@ def load_tolerances():
     all_rows = ws.get_all_values()
     tolerances = {}
     for row in all_rows[2:]:
-        if not row or not row[0].strip():
+        if not row or not row[0].strip() or "--- QC TEST LOG ---" in row[0]:
             break  
         try:
             name = row[0].strip()
@@ -388,7 +389,7 @@ def setup_tab3():
     ws = sh.worksheet(TAB_QC)
     all_rows = ws.get_all_values()
 
-    if all_rows and all_rows[0] and all_rows[0][0] == "COLOR TOLERANCE TABLE":
+    if all_rows and len(all_rows) >= 15 and all_rows[14] and all_rows[14][0] == "Timestamp":
         return
 
     colors = load_colors()
@@ -402,20 +403,15 @@ def setup_tab3():
 
     ws.update(f"A3:D{2 + len(tol_rows)}", tol_rows)
 
-    separator_row = 3 + len(tol_rows)
-    ws.update(f"A{separator_row}", [["--- QC TEST LOG ---"]])
-
-    log_header_row = separator_row + 1
-    ws.update(f"A{log_header_row}:M{log_header_row}", [[
+    # Force cleaner placement on row 14 and 15 to clear layout shift offsets
+    ws.update("A14", [["--- QC TEST LOG ---"]])
+    ws.update("A15:M15", [[
         "Timestamp", "Location", "Color Name",
         "Target L*", "Target a*", "Target b*",
         "Sample L*", "Sample a*", "Sample b*",
         "ΔL*", "Δa*", "Δb*",
         "Result"
     ]])
-
-    global LOG_SECTION_START
-    LOG_SECTION_START = log_header_row  
 
 
 def load_recent_log(n=15):
@@ -633,7 +629,7 @@ if run:
             overall
         ]
         append_log(log_row)
-        load_recent_log.clear()
+        st.cache_data.clear() # Corrected method call to erase data cache smoothly
         st.success("✓ Result logged to Google Sheets")
     except Exception as e:
         st.warning(f"Result calculated but could not write to sheet: {e}")
@@ -666,6 +662,7 @@ try:
               <td><span class="badge {badge_cls}">{res}</span></td>
             </tr>
             """
+        
         st.markdown(f"""
         <div class="card" style="overflow-x:auto">
           <table class="log-table">
@@ -675,7 +672,9 @@ try:
                 <th>ΔL*</th><th>Δa*</th><th>Δb*</th><th>Result</th>
               </tr>
             </thead>
-            <tbody>{rows_html}</tbody>
+            <tbody>
+              {rows_html}
+            </tbody>
           </table>
         </div>
         """, unsafe_allow_html=True)
