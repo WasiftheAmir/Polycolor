@@ -13,22 +13,21 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ─── STYLING ────────────────────────────────────────────────────────────────────
+# ─── STYLING (LIGHT THEMING) ───────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
 :root {
-    --bg:        #0d0d0d;
-    --surface:   #161616;
-    --border:    #2a2a2a;
-    --accent:    #e8ff47;
-    --accent2:   #ff4d6d;
-    --pass:      #39d98a;
-    --fail:      #ff4d6d;
-    --muted:     #555;
-    --text:      #f0f0f0;
-    --subtext:   #888;
+    --bg:        #ffffff;
+    --surface:   #f8f9fa;
+    --border:    #e2e8f0;
+    --accent:    #0ea5e9; /* Sky Blue */
+    --accent-hover: #0284c7;
+    --pass:      #16a34a;
+    --fail:      #dc2626;
+    --text:      #0f172a;
+    --subtext:   #64748b;
 }
 
 html, body, [class*="st-"] {
@@ -97,11 +96,11 @@ html, body, [class*="st-"] {
     margin: 2rem 0;
 }
 .result-banner.pass {
-    background: #0d2e1e;
+    background: #f0fdf4;
     border: 1.5px solid var(--pass);
 }
 .result-banner.fail {
-    background: #2e0d14;
+    background: #fef2f2;
     border: 1.5px solid var(--fail);
 }
 .result-label {
@@ -139,7 +138,7 @@ html, body, [class*="st-"] {
 .axis-bar-wrap {
     position: relative;
     height: 6px;
-    background: #222;
+    background: #e2e8f0;
     border-radius: 99px;
     overflow: visible;
 }
@@ -149,7 +148,7 @@ html, body, [class*="st-"] {
     top: 0;
     width: 1px;
     height: 100%;
-    background: var(--border);
+    background: #cbd5e1;
 }
 .axis-bar-fill {
     position: absolute;
@@ -177,11 +176,11 @@ html, body, [class*="st-"] {
     border-radius: 4px;
 }
 .axis-status.ok {
-    background: #0d2e1e;
+    background: #e6f4ea;
     color: var(--pass);
 }
 .axis-status.fail {
-    background: #2e0d14;
+    background: #fce8e6;
     color: var(--fail);
 }
 
@@ -216,23 +215,23 @@ html, body, [class*="st-"] {
 /* ── INPUTS ── */
 div[data-testid="stNumberInput"] input,
 div[data-testid="stTextInput"] input {
-    background: #1c1c1c !important;
+    background: #ffffff !important;
     border: 1px solid var(--border) !important;
     border-radius: 8px !important;
     color: var(--text) !important;
     font-family: 'DM Mono', monospace !important;
 }
 div[data-testid="stSelectbox"] > div > div {
-    background: #1c1c1c !important;
+    background: #ffffff !important;
     border: 1px solid var(--border) !important;
     border-radius: 8px !important;
     color: var(--text) !important;
 }
 
-/* ── BUTTON ── */
+/* ── BUTTON STYLING (FIXES THE TEXT BACKGROUND PACK) ── */
 div[data-testid="stButton"] > button {
     background: var(--accent) !important;
-    color: #0d0d0d !important;
+    color: #ffffff !important;
     border: none !important;
     border-radius: 8px !important;
     font-family: 'Syne', sans-serif !important;
@@ -241,9 +240,16 @@ div[data-testid="stButton"] > button {
     letter-spacing: 0.04em !important;
     padding: 0.6rem 2rem !important;
     width: 100%;
-    transition: opacity 0.15s;
+    transition: background-color 0.15s ease;
 }
-div[data-testid="stButton"] > button:hover { opacity: 0.85 !important; }
+div[data-testid="stButton"] > button:hover {
+    background: var(--accent-hover) !important;
+    color: #ffffff !important;
+}
+div[data-testid="stButton"] > button p {
+    background: transparent !important;
+    color: #ffffff !important;
+}
 
 /* ── LOG TABLE ── */
 .log-table { width: 100%; border-collapse: collapse; }
@@ -262,7 +268,7 @@ div[data-testid="stButton"] > button:hover { opacity: 0.85 !important; }
     font-size: 0.75rem;
     color: var(--text);
     padding: 0.6rem 0.75rem;
-    border-bottom: 1px solid #1e1e1e;
+    border-bottom: 1px solid #f1f5f9;
 }
 .log-table tr:last-child td { border-bottom: none; }
 .badge {
@@ -272,8 +278,8 @@ div[data-testid="stButton"] > button:hover { opacity: 0.85 !important; }
     font-size: 0.68rem;
     font-weight: 500;
 }
-.badge.pass { background: #0d2e1e; color: var(--pass); }
-.badge.fail { background: #2e0d14; color: var(--fail); }
+.badge.pass { background: #e6f4ea; color: var(--pass); }
+.badge.fail { background: #fce8e6; color: var(--fail); }
 
 /* ── STATUS CHIP ── */
 .status-chip {
@@ -282,9 +288,9 @@ div[data-testid="stButton"] > button:hover { opacity: 0.85 !important; }
     border-radius: 99px;
     font-family: 'DM Mono', monospace;
     font-size: 0.68rem;
-    background: #1a1a0a;
+    background: #e0f2fe;
     color: var(--accent);
-    border: 1px solid #3a3a10;
+    border: 1px solid #bae6fd;
     margin-bottom: 2rem;
 }
 
@@ -306,11 +312,7 @@ SHEET_ID = "1u0d5uV9r7NE8JjYd-vcE0z8PRLnE3bjMf1eFVjcW-yg"
 TAB_COLORS   = "Color Visualization Index"
 TAB_QC       = "Color Tolerance Sheet"
 
-# Tolerance table lives in rows 2 onwards (row 1 = header), columns B:E
-TOL_HEADER_ROW  = 1   # 0-indexed
-TOL_DATA_START  = 2   # 0-indexed row where data begins
-# QC log starts after a blank separator; we'll find the first empty row after row 20
-LOG_SECTION_START = 20  # rows 1-19 reserved for tolerance table + headers
+LOG_SECTION_START = 20  
 
 
 @st.cache_resource(ttl=60)
@@ -322,14 +324,12 @@ def get_sheet_client():
 
 @st.cache_data(ttl=60)
 def load_colors():
-    """Load target colors from Tab 1."""
     client = get_sheet_client()
     sh = client.open_by_key(SHEET_ID)
     ws = sh.worksheet(TAB_COLORS)
-    # Data starts at row 4, columns B-E (indices 1-4 in 0-based)
     all_rows = ws.get_all_values()
     colors = {}
-    for row in all_rows[3:]:  # skip header rows 1-3
+    for row in all_rows[3:]:  
         if len(row) >= 5 and row[1].strip():
             name = row[1].strip()
             try:
@@ -344,16 +344,14 @@ def load_colors():
 
 @st.cache_data(ttl=60)
 def load_tolerances():
-    """Load per-color tolerances from Tab 3 tolerance table."""
     client = get_sheet_client()
     sh = client.open_by_key(SHEET_ID)
     ws = sh.worksheet(TAB_QC)
     all_rows = ws.get_all_values()
     tolerances = {}
-    # Tolerance table: row 2 = header, rows 3+ = data (0-indexed: row 1 header, row 2+ data)
     for row in all_rows[2:]:
         if not row or not row[0].strip():
-            break  # stop at blank row (separator before log)
+            break  
         try:
             name = row[0].strip()
             tol_L = float(row[1])
@@ -366,20 +364,17 @@ def load_tolerances():
 
 
 def get_next_log_row():
-    """Find the next empty row in the log section of Tab 3."""
     client = get_sheet_client()
     sh = client.open_by_key(SHEET_ID)
     ws = sh.worksheet(TAB_QC)
     all_rows = ws.get_all_values()
-    # Log starts at LOG_SECTION_START (0-indexed), find first empty
     for i in range(LOG_SECTION_START, len(all_rows)):
         if not any(cell.strip() for cell in all_rows[i]):
-            return i + 1  # 1-indexed for gspread
+            return i + 1  
     return len(all_rows) + 1
 
 
 def append_log(row_data: list):
-    """Append a result row to the QC log in Tab 3."""
     client = get_sheet_client()
     sh = client.open_by_key(SHEET_ID)
     ws = sh.worksheet(TAB_QC)
@@ -388,36 +383,28 @@ def append_log(row_data: list):
 
 
 def setup_tab3():
-    """
-    Write tolerance table header + dummy data + log header to Tab 3
-    if not already set up. Call once on first run.
-    """
     client = get_sheet_client()
     sh = client.open_by_key(SHEET_ID)
     ws = sh.worksheet(TAB_QC)
     all_rows = ws.get_all_values()
 
-    # Check if already set up
     if all_rows and all_rows[0] and all_rows[0][0] == "COLOR TOLERANCE TABLE":
         return
 
     colors = load_colors()
 
-    # Section 1: Tolerance Table
     ws.update("A1", [["COLOR TOLERANCE TABLE"]])
     ws.update("A2:D2", [["Color Name", "ΔL* Tolerance (±)", "Δa* Tolerance (±)", "Δb* Tolerance (±)"]])
 
     tol_rows = []
     for name in colors:
-        tol_rows.append([name, 1.5, 1.5, 1.5])  # dummy tolerances ±1.5
+        tol_rows.append([name, 1.5, 1.5, 1.5])  
 
     ws.update(f"A3:D{2 + len(tol_rows)}", tol_rows)
 
-    # Blank separator row
     separator_row = 3 + len(tol_rows)
     ws.update(f"A{separator_row}", [["--- QC TEST LOG ---"]])
 
-    # Log header
     log_header_row = separator_row + 1
     ws.update(f"A{log_header_row}:M{log_header_row}", [[
         "Timestamp", "Location", "Color Name",
@@ -427,13 +414,11 @@ def setup_tab3():
         "Result"
     ]])
 
-    # Update LOG_SECTION_START to point just after this header
     global LOG_SECTION_START
-    LOG_SECTION_START = log_header_row  # next data row (1-indexed means row after)
+    LOG_SECTION_START = log_header_row  
 
 
 def load_recent_log(n=15):
-    """Load last n log entries from Tab 3."""
     client = get_sheet_client()
     sh = client.open_by_key(SHEET_ID)
     ws = sh.worksheet(TAB_QC)
@@ -451,8 +436,6 @@ def load_recent_log(n=15):
 
 # ─── LAB → sRGB CONVERSION ──────────────────────────────────────────────────────
 def lab_to_rgb_hex(L, a, b):
-    """Convert CIE L*a*b* to hex RGB for swatch display."""
-    # Lab → XYZ
     fy = (L + 16) / 116
     fx = a / 500 + fy
     fz = fy - b / 200
@@ -464,12 +447,10 @@ def lab_to_rgb_hex(L, a, b):
     Y = f_inv(fy) * 1.00000
     Z = f_inv(fz) * 1.08883
 
-    # XYZ → linear RGB
     r =  3.2406 * X - 1.5372 * Y - 0.4986 * Z
     g = -0.9689 * X + 1.8758 * Y + 0.0415 * Z
     b_ =  0.0557 * X - 0.2040 * Y + 1.0570 * Z
 
-    # Gamma correction
     def gamma(c):
         c = max(0, min(1, c))
         return 12.92 * c if c <= 0.0031308 else 1.055 * (c ** (1 / 2.4)) - 0.055
@@ -494,7 +475,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# ─── INIT SHEET (once) ──────────────────────────────────────────────────────────
+# ─── INIT SHEET ─────────────────────────────────────────────────────────────────
 try:
     with st.spinner("Connecting to Google Sheets..."):
         setup_tab3()
@@ -503,7 +484,6 @@ try:
     st.markdown('<div class="status-chip">● CONNECTED TO GOOGLE SHEETS</div>', unsafe_allow_html=True)
 except Exception as e:
     st.error(f"⚠️ Could not connect to Google Sheets: {e}")
-    st.info("Make sure your `secrets.toml` contains valid `gcp_service_account` credentials.")
     st.stop()
 
 
@@ -530,7 +510,7 @@ with col_b:
     sample_b = st.number_input("Sample b*", value=0.00, step=0.01, format="%.2f")
 
 
-# ─── LIVE PREVIEW (target swatch when color selected) ───────────────────────────
+# ─── LIVE PREVIEW ───────────────────────────────────────────────────────────────
 if selected_color:
     target = colors[selected_color]
     tol    = tolerances.get(selected_color, {"L": 1.5, "a": 1.5, "b": 1.5})
@@ -545,20 +525,20 @@ if selected_color:
           <div class="swatch-label">Target — {selected_color}</div>
           <div style="display:flex;gap:1rem;align-items:center">
             <div class="swatch-box" style="background:{target_hex}"></div>
-            <div class="swatch-vals">L* {target['L']:.2f}<br>a* {target['a']:.2f}<br>b* {target['b']:.2f}</div>
+            <div class="swatch-vals" style="color:var(--text)">L* {target['L']:.2f}<br>a* {target['a']:.2f}<br>b* {target['b']:.2f}</div>
           </div>
         </div>
-        <div style="color:#333;font-size:2rem;padding:0 1rem;margin-top:1.5rem">→</div>
+        <div style="color:#cbd5e1;font-size:2rem;padding:0 1rem;margin-top:1.5rem">→</div>
         <div>
           <div class="swatch-label">Sample (entered values)</div>
           <div style="display:flex;gap:1rem;align-items:center">
             <div class="swatch-box" style="background:{sample_hex}"></div>
-            <div class="swatch-vals">L* {sample_L:.2f}<br>a* {sample_a:.2f}<br>b* {sample_b:.2f}</div>
+            <div class="swatch-vals" style="color:var(--text)">L* {sample_L:.2f}<br>a* {sample_a:.2f}<br>b* {sample_b:.2f}</div>
           </div>
         </div>
         <div style="margin-left:auto;text-align:right">
           <div class="swatch-label">Active Tolerances</div>
-          <div class="swatch-vals">
+          <div class="swatch-vals" style="color:var(--text)">
             ΔL* ±{tol['L']:.2f}<br>
             Δa* ±{tol['a']:.2f}<br>
             Δb* ±{tol['b']:.2f}
@@ -589,7 +569,6 @@ if run:
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # ── Result Banner ──
     fail_axes = [ax for ax, ok in [("L*", ok_L), ("a*", ok_a), ("b*", ok_b)] if not ok]
     fail_note = f"Axes exceeded: {', '.join(fail_axes)}" if fail_axes else "All axes within tolerance"
 
@@ -597,7 +576,7 @@ if run:
     <div class="result-banner {result_class}">
       <div>
         <div class="result-label {result_class}">{overall}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:0.75rem;color:{'#39d98a' if overall=='PASS' else '#ff4d6d'};margin-top:0.4rem">
+        <div style="font-family:'DM Mono',monospace;font-size:0.75rem;color:{'#16a34a' if overall=='PASS' else '#dc2626'};margin-top:0.4rem">
           {fail_note}
         </div>
       </div>
@@ -614,10 +593,9 @@ if run:
     st.markdown('<div class="card">', unsafe_allow_html=True)
 
     def bar_html(delta, tol_val, ok):
-        pct = min(abs(delta) / (tol_val * 2), 0.5) * 100  # % from centre (max 50%)
-        direction = "right" if delta >= 0 else "left"
+        pct = min(abs(delta) / (tol_val * 2), 0.5) * 100  
         left_pos = "50%" if delta >= 0 else f"{50 - pct}%"
-        color = "#39d98a" if ok else "#ff4d6d"
+        color = "#16a34a" if ok else "#dc2626"
         sign = "+" if delta > 0 else ""
         status_cls = "ok" if ok else "fail"
         status_txt = "OK" if ok else "FAIL"
@@ -638,7 +616,7 @@ if run:
         <div class="axis-row">
           <div class="axis-name">{axis_name}</div>
           {bar}
-          <div class="axis-val" style="color:{'#39d98a' if ok else '#ff4d6d'}">{val_str}</div>
+          <div class="axis-val" style="color:{'#16a34a' if ok else '#dc2626'}">{val_str}</div>
           <div class="axis-tol">tol ±{tol_val:.2f}</div>
           <div class="axis-status {status_cls}">{status_txt}</div>
         </div>
@@ -646,7 +624,6 @@ if run:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # ── Log to Google Sheets ──
     try:
         log_row = [
             now, location, selected_color,
@@ -669,7 +646,7 @@ st.markdown('<div class="section-label">Recent Test Log</div>', unsafe_allow_htm
 try:
     log_rows = load_recent_log(15)
     if not log_rows:
-        st.markdown('<div style="color:#555;font-family:DM Mono,monospace;font-size:0.8rem">No tests logged yet.</div>', unsafe_allow_html=True)
+        st.markdown('<div style="color:#888;font-family:DM Mono,monospace;font-size:0.8rem">No tests logged yet.</div>', unsafe_allow_html=True)
     else:
         rows_html = ""
         for row in reversed(log_rows):
