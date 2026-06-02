@@ -6,7 +6,7 @@ import pandas as pd
 
 # ─── PAGE CONFIG ────────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="ACI Premio | Colour QC",
+    page_title="ACI Premio PolyColor",
     page_icon="🎨",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -426,7 +426,7 @@ st.markdown("""
 <div class="header-wrap">
   <div>
     <div class="header-sub">ACI Premio Plastics · QC Division</div>
-    <h1 class="header-title">Colour <span>QC</span> System</h1>
+    <h1 class="header-title"> PolyColor </h1>
   </div>
   <div class="header-sub">CIE L*a*b* · Independent Axis Evaluation</div>
 </div>
