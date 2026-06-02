@@ -306,7 +306,7 @@ if st.button("Run Colour Evaluation & Log Data"):
         <div class="axis-row">
           <div class="axis-name">{ax}</div>
           <div class="axis-bar-wrap"><div class="axis-bar-center"></div><div class="axis-bar-fill" style="left:{l_pos};width:{pct}%;background:{'#16a34a' if ok else '#dc2626'}"></div></div>
-          <div class="axis-val" style="color:{'#16a34a' if ok else '#dc2626'}">{"++" if d_val > 0 else ""}{d_val:.4f}</div>
+          <div class="axis-val" style="color:{'#16a34a' if ok else '#dc2626'}">{"+" if d_val > 0 else ""}{d_val:.4f}</div>
           <div class="axis-tol">limit ±{t_val:.2f}</div>
           <div style="text-align:center;"><span class="badge {'pass' if ok else 'fail'}">{'OK' if ok else 'ERR'}</span></div>
         </div>"""
@@ -314,41 +314,58 @@ if st.button("Run Colour Evaluation & Log Data"):
 
     try:
         append_log([now, location, selected_color, t["L"], t["a"], t["b"], sample_L, sample_a, sample_b, dL, da, db, verdict])
-        st.cache_data.clear()
+        load_recent_log.clear()()
         st.success("✓ Batch telemetry successfully committed to Google Sheet.")
     except Exception as err:
         st.error(f"Local write execution failure: {err}")
 
-# --- SEPARATE UN-NESTED INLINE TABLE RENDER ---
+# --- LOG TABLE ---
 st.markdown('<div class="section-label">Recent Laboratory Logs</div>', unsafe_allow_html=True)
+
 try:
     recent_data = load_recent_log()
     if not recent_data:
         st.markdown('<div style="font-family:monospace;font-size:0.8rem;color:#64748b;">No verification records found.</div>', unsafe_allow_html=True)
     else:
-        table_rows = ""
-        for r in reversed(recent_data):
+        import pandas as pd
+
+        # Build dataframe from last 10 rows, newest first
+        rows = []
+        for r in reversed(recent_data[-10:]):
             if len(r) >= 13:
-                table_rows += f"""
-                <tr>
-                  <td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td>
-                  <td style="color:{'#16a34a' if float(r[9])>=0 else '#dc2626'}">{r[9]}</td>
-                  <td style="color:{'#16a34a' if float(r[10])>=0 else '#dc2626'}">{r[10]}</td>
-                  <td style="color:{'#16a34a' if float(r[11])>=0 else '#dc2626'}">{r[11]}</td>
-                  <td><span class="badge {'pass' if r[12]=='PASS' else 'fail'}">{r[12]}</span></td>
-                </tr>"""
-        
-        st.markdown(f"""
-        <div class="card" style="overflow-x:auto; background:#ffffff;">
-          <table class="log-table">
-            <thead>
-              <tr><th>Timestamp</th><th>Location</th><th>Colour Name</th><th>ΔL*</th><th>Δa*</th><th>Δb*</th><th>Verdict</th></tr>
-            </thead>
-            <tbody>
-              {table_rows}
-            </tbody>
-          </table>
-        </div>
-        """, unsafe_allow_html=True)
+                rows.append({
+                    "Timestamp":   r[0],
+                    "Location":    r[1],
+                    "Colour":      r[2],
+                    "ΔL*":         float(r[9]),
+                    "Δa*":         float(r[10]),
+                    "Δb*":         float(r[11]),
+                    "Verdict":     r[12],
+                })
+
+        df = pd.DataFrame(rows)
+
+        def style_table(df):
+            def row_style(row):
+                is_pass = row["Verdict"] == "PASS"
+                verdict_color = "#16a34a" if is_pass else "#dc2626"
+                verdict_bg    = "#f0fdf4" if is_pass else "#fef2f2"
+                styles = [""] * len(row)
+                vi = df.columns.get_loc("Verdict")
+                styles[vi] = f"color:{verdict_color};background:{verdict_bg};font-weight:600"
+                return styles
+
+            return df.style.apply(row_style, axis=1).format({
+                "ΔL*": "{:+.4f}",
+                "Δa*": "{:+.4f}",
+                "Δb*": "{:+.4f}",
+            })
+
+        st.dataframe(
+            style_table(df),
+            use_container_width=True,
+            hide_index=True,
+        )
+
 except Exception as log_err:
     st.markdown('<div style="font-family:monospace;font-size:0.8rem;color:#64748b;">Awaiting first testing instance activation.</div>', unsafe_allow_html=True)
