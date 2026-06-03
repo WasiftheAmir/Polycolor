@@ -352,8 +352,8 @@ SCOPES = [
 ]
 SHEET_ID          = "1u0d5uV9r7NE8JjYd-vcE0z8PRLnE3bjMf1eFVjcW-yg"
 TAB_COLORS        = "Color Visualization Index"
-TAB_QC            = "Color Tolerance Sheet"
-LOG_SECTION_START = 15
+TAB_TOLERANCES = "Color Tolerance Sheet"
+TAB_LOG        = "Comparison Log"
 
 @st.cache_resource(ttl=60)
 def get_sheet_client():
@@ -376,7 +376,7 @@ def load_colors():
 
 @st.cache_data(ttl=60)
 def load_tolerances():
-    all_rows = get_sheet_client().open_by_key(SHEET_ID).worksheet(TAB_QC).get_all_values()
+    all_rows = get_sheet_client().open_by_key(SHEET_ID).worksheet(TAB_TOLERANCES).get_all_values()
     tolerances = {}
     for row in all_rows[2:]:
         if not row or not row[0].strip() or "---" in row[0]:
@@ -388,18 +388,14 @@ def load_tolerances():
     return tolerances
 
 def append_log(row_data: list):
-    ws = get_sheet_client().open_by_key(SHEET_ID).worksheet(TAB_QC)
+    ws = get_sheet_client().open_by_key(SHEET_ID).worksheet(TAB_LOG)
     all_rows = ws.get_all_values()
     next_row = len(all_rows) + 1
-    for i in range(LOG_SECTION_START - 1, len(all_rows)):
-        if not any(cell.strip() for cell in all_rows[i]):
-            next_row = i + 1
-            break
     ws.update(f"A{next_row}:M{next_row}", [row_data])
 
 @st.cache_data(ttl=60)
 def load_recent_log():
-    all_rows = get_sheet_client().open_by_key(SHEET_ID).worksheet(TAB_QC).get_all_values()
+    all_rows = get_sheet_client().open_by_key(SHEET_ID).worksheet(TAB_TOLERANCES).get_all_values()
     log_rows, in_log = [], False
     for row in all_rows:
         if row and row[0] == "Timestamp":
